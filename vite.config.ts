@@ -39,7 +39,8 @@ export default defineConfig({
     // 自定引入hook:https://github.com/unplugin/unplugin-auto-import
     AutoImport({
       imports: ['vue', 'vue-router', 'vue-i18n', 'pinia', '@vueuse/core'],
-      dts: true,// 正确提示类型
+      // dts: '/auto-imports.d.ts',//防止类型不识别
+      dts:true,// 正确提示类型
       dirs: ['src/composables/**', 'src/utils/**'],//自定义导入该文件夹下的文件
       vueTemplate: true,
       eslintrc: {
