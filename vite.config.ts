@@ -17,7 +17,7 @@ export default defineConfig({
   // 解决环境变量不加载的问题 https://github.com/vitejs/vite/discussions/2260
   server: {
     host: '0.0.0.0',
-    port: 4399,
+    port: 4299,
     // proxy:{
     // [baseApi]: {
     //   target: baseUrl + baseApi,

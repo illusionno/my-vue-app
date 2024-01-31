@@ -7,7 +7,8 @@
     "allowJs": true, //指定源目录的 JavaScript 文件是否原样拷贝到编译后的目录
     "types": [
       "vite/client",//确保 TypeScript 可以正确识别 Vite 的类型
-      "unplugin-icons/types/vue"
+      "unplugin-icons/types/vue",
+      "@vueuse/integrations"
     ],
     "target": "ES6",
     "isolatedModules": true,
