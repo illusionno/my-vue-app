@@ -8,7 +8,7 @@
     "types": [
       "vite/client",//确保 TypeScript 可以正确识别 Vite 的类型
       "unplugin-icons/types/vue",
-      "@vueuse/integrations"
+      "@vueuse/integrations",
     ],
     "target": "ES6",
     "isolatedModules": true,
