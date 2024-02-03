@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import './style.css'
 import 'uno.css';
 import App from './App.vue'
+import 'normalize.css/normalize.css'
 import 'element-plus/dist/index.css'
 import { setupI18n } from '@/modules/i18n'
 // 使用async/await会按顺序执行，前面任务完成后再执行后面的任务

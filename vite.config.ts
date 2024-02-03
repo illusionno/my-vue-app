@@ -7,7 +7,8 @@ import Icons from 'unplugin-icons/vite'
 import IconsResolver from 'unplugin-icons/resolver'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
-import UnoCSS from 'unocss/vite';
+import UnoCSS from 'unocss/vite'
+import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
 
 const srcPath = resolve(__dirname, 'src');
 // const baseApi = process.env.VITE_APP_BASE_API || '';
@@ -38,9 +39,16 @@ export default defineConfig({
     }),
     // 自定引入hook:https://github.com/unplugin/unplugin-auto-import
     AutoImport({
-      imports: ['vue', 'vue-router', 'vue-i18n', 'pinia', '@vueuse/core'],
+      imports: ['vue', 'vue-router', 'vue-i18n', 'pinia', '@vueuse/core',{
+        'naive-ui': [
+          'useDialog',
+          'useMessage',
+          'useNotification',
+          'useLoadingBar'
+        ]
+      }],
       // dts: '/auto-imports.d.ts',//防止类型不识别
-      dts:true,// 正确提示类型
+      dts: true,// 正确提示类型
       dirs: ['src/composables/**', 'src/utils/**'],//自定义导入该文件夹下的文件
       vueTemplate: true,
       eslintrc: {
@@ -69,7 +77,8 @@ export default defineConfig({
         ElementPlusResolver({
           importStyle: false,
         }),
-
+        // Naive UI
+        NaiveUiResolver()
       ]
     }),
     // 图标：https://github.com/unplugin/unplugin-icons
