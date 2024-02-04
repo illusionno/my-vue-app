@@ -5,7 +5,7 @@
   <draggable
     :list="state.list"
     :disabled="!state.enabled"
-    item-key="name"
+    item-key="id"
     class="w-25"
     ghost-class="ghost"
     chosen-class="chosen"
@@ -15,7 +15,7 @@
   >
     <template #item="{ element }">
       <div class="mt-2 w-100%">
-        <transition-group>
+        <!-- <transition-group> -->
           <!-- 使用 transition-group 要添加 key -->
           <n-tag
             class="item"
@@ -24,7 +24,7 @@
           >
             {{ element.name }}
           </n-tag>
-        </transition-group>
+        <!-- </transition-group> -->
       </div>
     </template>
   </draggable>
@@ -66,5 +66,22 @@ const add = () => {
 }
 .not-draggable {
   cursor: no-drop;
+}
+/* 对移动中的元素应用的过渡 */
+.v-enter-active,
+.v-leave-active {
+  transition: all 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+/* 确保将离开的元素从布局流中删除
+  以便能够正确地计算移动的动画。 */
+.v-leave-active {
+  position: absolute;
 }
 </style>

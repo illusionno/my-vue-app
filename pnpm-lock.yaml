@@ -22,7 +22,10 @@ dependencies:
     version: 10.7.2(vue@3.4.15)
   '@vueuse/integrations':
     specifier: ^10.7.2
-    version: 10.7.2(nprogress@0.2.0)(universal-cookie@7.0.1)(vue@3.4.15)
+    version: 10.7.2(async-validator@4.2.5)(nprogress@0.2.0)(universal-cookie@7.0.1)(vue@3.4.15)
+  async-validator:
+    specifier: ^4.2.5
+    version: 4.2.5
   crypto-js:
     specifier: ^4.2.0
     version: 4.2.0
@@ -32,6 +35,9 @@ dependencies:
   element-plus:
     specifier: ^2.5.2
     version: 2.5.2(vue@3.4.15)
+  ip-regex:
+    specifier: ^5.0.0
+    version: 5.0.0
   lodash:
     specifier: ^4.17.21
     version: 4.17.21
@@ -1333,7 +1339,7 @@ packages:
       - vue
     dev: false
 
-  /@vueuse/integrations@10.7.2(nprogress@0.2.0)(universal-cookie@7.0.1)(vue@3.4.15):
+  /@vueuse/integrations@10.7.2(async-validator@4.2.5)(nprogress@0.2.0)(universal-cookie@7.0.1)(vue@3.4.15):
     resolution: {integrity: sha512-+u3RLPFedjASs5EKPc69Ge49WNgqeMfSxFn+qrQTzblPXZg6+EFzhjarS5edj2qAf6xQ93f95TUxRwKStXj/sQ==}
     peerDependencies:
       async-validator: '*'
@@ -1376,6 +1382,7 @@ packages:
     dependencies:
       '@vueuse/core': 10.7.2(vue@3.4.15)
       '@vueuse/shared': 10.7.2(vue@3.4.15)
+      async-validator: 4.2.5
       nprogress: 0.2.0
       universal-cookie: 7.0.1
       vue-demi: 0.14.6(vue@3.4.15)
@@ -1888,6 +1895,11 @@ packages:
   /immutable@4.3.4:
     resolution: {integrity: sha512-fsXeu4J4i6WNWSikpI88v/PcVflZz+6kMhUfIwc5SY+poQRPnaf5V7qds6SUyUN3cVxEzuCab7QIoLOQ+DQ1wA==}
     dev: true
+
+  /ip-regex@5.0.0:
+    resolution: {integrity: sha512-fOCG6lhoKKakwv+C6KdsOnGvgXnmgfmp0myi3bcNwj3qfwPAxRKWEuFhvEFF7ceYIz6+1jRZ+yguLFAmUNPEfw==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+    dev: false
 
   /is-binary-path@2.1.0:
     resolution: {integrity: sha512-ZMERYes6pDydyuGidse7OsHxtbI7WVeUEozgR/g7rd0xUimYNlvZRE/K2MgZTjWy725IfelLeVcEM97mmtRGXw==}
