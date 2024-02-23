@@ -1,12 +1,25 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import type { App } from 'vue';
 
-const Home = () => import('@/views/Home.vue');
-const Load = () => import('@/views/Load.vue');
 const routes = [
-    { path: '/', component: Load },
-    { path: '/load',name:'load', component: Load },
-    { path: '/home',name:'home', component: Home },
+    {
+        path: '/', redirect: '/load', meta: {
+            title: '加载页',
+        }
+    },
+    // 加载页
+    { path: '/load', name: 'load', component: () => import('@/views/load/LoadIndex.vue') },
+    {
+
+        path: '/home', name: 'home', component: () => import('@/views/layout/LayoutIndex.vue'),
+        children: [{
+            // 主页
+            path: '/index', name: 'index', component: () => import('@/views/home/homeIndex.vue')
+        }, {
+            // 前端-javascript
+            path: '/javascript', name: 'javascript', component: () => import('@/views/font-end/javascript/JavascriptIndex.vue')
+        }]
+    },
 ];
 const router = createRouter({
     history: createWebHashHistory(),

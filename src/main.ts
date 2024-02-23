@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
-import './style.css'
 import 'uno.css';
+import '@/styles/common.scss'
 import App from './App.vue'
 import 'normalize.css/normalize.css'
 import 'element-plus/dist/index.css'

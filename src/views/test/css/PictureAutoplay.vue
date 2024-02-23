@@ -53,7 +53,7 @@
        opacity: 1;
      }
    
-     50% {
+   50% {
        opacity: .8;
        scale: 1;
      }

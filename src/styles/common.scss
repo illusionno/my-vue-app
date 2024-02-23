@@ -1,0 +1,13 @@
+body{
+    font-size: 16px;
+}
+.auto-wrap {
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+    position: relative;
+  }
+  .i-icon {
+    display: grid;
+    place-content: center;
+  }
