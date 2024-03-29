@@ -21,7 +21,7 @@
           :show-arrow="true"
           @select="handleLangOptions"
         >
-          <n-button text>语言</n-button>
+          <n-button text @click="toggle">切换语言</n-button>
         </n-dropdown>
         <div class="flex gap-3">
           <n-button quaternary> GitHub </n-button>
@@ -73,6 +73,14 @@ const handleLangOptions = (key) => {
   // 路由跳转
   console.log(key);
 };
+const toggle = () => {
+if(localStorage.getItem('locale')==='zh-cn'){
+  localStorage.setItem('locale','en')
+}else{
+  localStorage.setItem('locale','zh-cn')
+}
+  // language.value = language.value === 'zh-cn' ? 'en' : 'zh-cn'
+}
 </script>
 <style scoped lang="scss">
 .header {
