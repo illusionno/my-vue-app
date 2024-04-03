@@ -33,15 +33,46 @@ import StartBtn from './StartBtn.vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
- function getOneSentence(){
+// https://docs.tenapi.cn/random/yiyan.html#%E6%8E%A5%E5%8F%A3%E5%9C%B0%E5%9D%80
+ async function getOneSentence(){
   try {
-  fetch('https://v1.hitokoto.cn').then(res =>{
-    console.log(res);
-  })
+    let response = await fetch('https://tenapi.cn/v2/yiyan');
+console.log(response.body);
   } catch (error) {
-    console.log(error);
+    console.log('Request Failed', error);
   }
+
 }
+// // 1. 准备请求参数
+// const url = 'https://api.example.com/data'; // 要请求的API端点
+// const data = { key1: 'value1', key2: 'value2' }; // 要发送的数据（JSON对象或其他格式）
+// const headers = {
+//   'Content-Type': 'application/json', // 设置请求头，这里是JSON格式
+// };
+
+// // 2. 创建请求对象（可选，用于添加额外配置）
+// const requestInit = {
+//   method: 'POST', // 指定请求方法为POST
+//   headers, // 添加请求头
+//   body: JSON.stringify(data), // 将数据序列化为JSON字符串作为请求体
+// };
+
+// // 3. 发起POST请求
+// fetch(url, requestInit)
+//   .then(response => {
+//     if (!response.ok) { // 检查响应状态是否成功（HTTP 200-299）
+//       throw new Error('Network response was not ok');
+//     }
+//     return response.json(); // 解析返回的JSON数据
+//   })
+//   .then(data => {
+//     console.log('Received data:', data);
+//     // 在这里处理返回的数据
+//   })
+//   .catch(error => {
+//     console.error('Error during fetch:', error);
+//     // 在这里处理错误情况
+//   });
 onMounted(() =>{
   getOneSentence()
 })
