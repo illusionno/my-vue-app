@@ -1,10 +1,16 @@
 <template>
-<a class="btn-draw" href="#"><span>Let's Go!</span></a>
+<a class="btn-draw"><span>Let's Go!</span></a>
+
 </template>
 <script setup>
 
 </script>
 <style scoped lang="scss">
+// todo 123
+// ! 123
+// ? 123
+// * 123
+
 // Normalize/Reset only elements used
 body {
   margin: 0;

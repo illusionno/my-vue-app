@@ -11,10 +11,10 @@ const routes = [
     { path: '/load', name: 'load', component: () => import('@/views/load/LoadIndex.vue') },
     {
 
-        path: '/home', name: 'home', component: () => import('@/views/layout/LayoutIndex.vue'),
+        path: '/layout', name: 'layout', component: () => import('@/views/layout/LayoutIndex.vue'),
         children: [{
             // 主页
-            path: '/index', name: 'index', component: () => import('@/views/home/homeIndex.vue')
+            path: '/home', name: 'home', component: () => import('@/views/home/homeIndex.vue')
         }, {
             // 前端-javascript
             path: '/javascript', name: 'javascript', component: () => import('@/views/font-end/javascript/JavascriptIndex.vue')

@@ -1,0 +1,16 @@
+<!-- !width、height：指定了 SVG 图像在 HTML 元素中所占据的宽度和高度 -->
+<!-- !viewBox：左上角的横坐标和纵坐标（起始点）、视口的宽度和高度 -->
+<!-- !如果不指定width属性和height属性，只指定viewBox属性: SVG 图像的默认大小将等于所在的 HTML 元素的大小 -->
+<svg width="120" height="120" id="mysvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600"
+    preserveAspectRatio="xMidYMid meet">
+    <!-- !cx、cy、r属性分别为横坐标、纵坐标和半径 -->
+    <!-- !fill：填充颜色 /stroke：描边色/ troke-width：边框宽度 -->
+    <!-- !<g>:多个形状组成一个组 -->
+    <g id="myCircle">
+        <circle id="mycircle" cx="100" cy="40" r="50" fill="red" stroke="blue" stroke-width="5pt" />
+        <rect id="myRect" x="200" y="0" height="100" width="200" style="stroke: #70d5dd; fill: blue" />
+       <!--!<use>:复制一个形状 -->
+        <use href="#myRect" x="300" y="0" fill=" white" stroke="#e98737"></use>
+    </g>
+
+</svg>
