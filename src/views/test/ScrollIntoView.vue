@@ -77,6 +77,9 @@ const changeTab = (index: number) => {
         margin-bottom: 10px;
         // 定义滚动吸附区域的上外边距
         scroll-margin-top: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 }
 </style>

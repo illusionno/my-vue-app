@@ -9,6 +9,7 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
 import UnoCSS from 'unocss/vite'
 import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
+import basicSsl from '@vitejs/plugin-basic-ssl'
 
 const srcPath = resolve(__dirname, 'src');
 // const baseApi = process.env.VITE_APP_BASE_API || '';
@@ -19,6 +20,7 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 4299,
+    https:true
     // proxy:{
     // [baseApi]: {
     //   target: baseUrl + baseApi,
@@ -98,6 +100,7 @@ export default defineConfig({
       compositionOnly: true,
       fullInstall: true,
       include: [resolve(__dirname, 'locales/**')],
-    })
+    }),
+    basicSsl()
   ],
 })

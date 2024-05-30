@@ -22,7 +22,7 @@ function bubbleSort(arr) {
   }
   return arr;
 }
-console.log(bubbleSort([5, 3, 8, 1, 2]));
+// console.log(bubbleSort([5, 3, 8, 1, 2]));
 
 
 /**
@@ -54,7 +54,7 @@ function insertionSort(arr) {
 }
 
 // 示例
-console.log(insertionSort([5, 3, 8, 1, 2]));
+// console.log(insertionSort([5, 3, 8, 1, 2]));
 
 /**
  * 选择排序算法：
@@ -92,4 +92,4 @@ function selectionSort(arr) {
 
   return arr;
 }
-console.log(selectionSort([5, 3, 8, 1, 2]));
+// console.log(selectionSort([5, 3, 8, 1, 2]));
