@@ -5,7 +5,7 @@
         <div class="line"></div>
         <div class="angle"></div>
       </div>
-      <div v-if="isUseTorch" class="box2">
+      <div v-if="state.isUseTorch" class="box2">
         <div class="track" @click="openTrack">
           <!-- <svg t="1653920715959" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
             p-id="1351" width="32" height="32">
@@ -15,13 +15,13 @@
           </svg> -->
 
 
-          <div class="flash-light" v-if="trackStatus">
+          <div class="flash-light" v-if="state.trackStatus">
             <MdiFlashlightOff style="width: 30px;height: 30px" />
           </div>
           <div class="flash-light" v-else>
             <MdiFlashlight style="width: 30px;height: 30px" />
           </div>
-          {{ trackStatus ? "关闭闪光灯" : "打开闪光灯" }}
+          {{ state.trackStatus ? "关闭闪光灯" : "打开闪光灯" }}
         </div>
       </div>
 
@@ -37,213 +37,230 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import jsQR from "jsqr";
 import { PictureFilled } from "@element-plus/icons-vue";
 import MdiFlashlight from "~icons/mdi/flashlight";
 import MdiFlashlightOff from "~icons/mdi/flashlight-off";
-export default {
-  name: "GetQrcode",
-  props: {
-    continue: {
-      type: Boolean,
-      default: true, // false 监听一次   true 持续监听
-    },
-    exact: {
-      type: String,
-      default: "environment", // environment 后摄像头  user 前摄像头  //  P.S. 如果要在PC端测试，把这一行注释掉，因为PC没有后置摄像头
-    },
-    size: {
-      type: String,
-      default: "whole", // whole 全屏  balf 半屏
-    },
-    definition: {
-      type: Boolean,
-      default: false, // fasle 正常  true 高清
-    },
+// const props = withDefaults(defineProps<{
+//   // 是否持续监听
+//   continue?: boolean;
+//   // environment 后摄像头  user 前摄像头
+//   exact?: 'environment' | 'user';
+//   //  whole 全屏  half 半屏
+//   size?: 'whole' | 'half';
+//   // 清晰度: fasle 正常  true 高清
+//   definition?: boolean;
+// }>(), {
+//   continue: false,
+//   exact: 'environment',
+//   size: 'whole',
+//   definition: false
+// })
+const props = defineProps({
+  continue: {
+    type: Boolean,
+    default: true, // false 监听一次   true 持续监听
   },
-  data() {
-    return {
-      video: undefined,
-
-      canvas2d: undefined,
-      canvasWidth: 520,
-      canvasHeight: 500,
-
-      c: undefined,
-
-      track: null,
-      isUseTorch: false,
-      trackStatus: false,
-    };
+  exact: {
+    type: String,
+    default: "environment", // environment 后摄像头  user 前摄像头  //  P.S. 如果要在PC端测试，把这一行注释掉，因为PC没有后置摄像头
   },
-  mounted() {
-    if (origin.indexOf("https") === -1) {
-      // Message.warning("请在 https 环境中使用本插件。");
+  size: {
+    type: String,
+    default: "whole", // whole 全屏  balf 半屏
+  },
+  definition: {
+    type: Boolean,
+    default: false, // fasle 正常  true 高清
+  },
+})
+const state = reactive({
+  video: undefined,
+  canvas2d: undefined,
+  canvasWidth: 520,
+  canvasHeight: 500,
+  c: undefined,
+  track: null,
+  isUseTorch: false,
+  trackStatus: false,
+})
+const fileRef = ref()
+
+onMounted(() => {
+  if (origin.indexOf("https") === -1) {
+    // Message.warning("请在 https 环境中使用本插件。");
+  }
+
+  const windowWidth = window.screen.availWidth;
+  const windowHeight = window.screen.availHeight;
+
+  state.canvasWidth = windowWidth;
+  state.canvasHeight = windowHeight;
+
+  nextTick(() => {
+    state.video = document.createElement("video");
+    state.c = document.createElement("canvas");
+    state.c.id = "c";
+    state.c.width = state.canvasWidth;
+    state.c.height = state.canvasHeight;
+    state.c.style.width = "100%";
+    document.querySelector(".canvasBox").append(state.c);
+    openScan();
+  });
+})
+onUnmounted(() => {
+  closeCamera()
+})
+async function openScan() {
+  let width = state.canvasHeight;
+  width = props.size === "whole" ? width : width * 0.5;
+  width = props.definition ? width * 1.6 : width;
+  let height = state.canvasWidth;
+  height = props.definition ? height * 1.6 : height;
+  const videoParam = {
+    audio: false,
+    video: {
+      facingMode: { exact: props.exact },
+      width,
+      height,
+    },
+  };
+ await navigator.mediaDevices
+    .getUserMedia(videoParam)
+    .then((stream) => {
+      state.video.srcObject = stream;
+      state.video.setAttribute("playsinline", true);
+      state.video.play();
+      requestAnimationFrame(tick);
+
+      // 下面这 4 行这么麻烦的写，是因为我项目中严格的语法检测，嫌麻烦可以试试下面注释掉的一行
+      // let a = [];
+      // a = stream.getVideoTracks();
+      // const t = a[0];
+      // state.track = t;
+
+      [state.track] = stream.getVideoTracks();
+
+      setTimeout(() => {
+        state.isUseTorch = state.track.getCapabilities().torch || null;
+      }, 500);
+    })
+    .catch((err) => {
+      ElMessage.warning("设备不支持,请检查是否允许摄像头权限");
+      console.log("获取本地设备（摄像头）---失败-------err");
+      console.log(err);
+    });
+}
+function closeCamera() {
+  if (state.video.srcObject) {
+    state.video.srcObject.getTracks().forEach((track) => {
+      track.stop();
+    });
+  }
+}
+function tick() {
+  if (state.video.readyState === state.video.HAVE_ENOUGH_DATA) {
+    state.canvasHeight = state.video.videoHeight;
+    state.canvasWidth = state.video.videoWidth;
+    state.c.width = state.canvasWidth;
+    state.c.height = state.canvasHeight;
+    if (state.canvas2d === undefined) {
+      state.canvas2d = state.c.getContext("2d");
     }
 
-    const windowWidth = window.screen.availWidth;
-    const windowHeight = window.screen.availHeight;
+    state.canvas2d.drawImage(
+      state.video,
+      0,
+      0,
+      state.canvasWidth,
+      state.canvasHeight
+    );
 
-    this.canvasWidth = windowWidth;
-    this.canvasHeight = windowHeight;
+    const imageData = state.canvas2d.getImageData(
+      0,
+      0,
+      state.canvasWidth,
+      state.canvasHeight
+    );
 
-    this.$nextTick(() => {
-      this.video = document.createElement("video");
-      this.c = document.createElement("canvas");
-      this.c.id = "c";
-      this.c.width = this.canvasWidth;
-      this.c.height = this.canvasHeight;
-      this.c.style.width = "100%";
-      document.querySelector(".canvasBox").append(this.c);
-      this.openScan();
+    const code = jsQR(imageData.data, imageData.width, imageData.height, {
+      inversionAttempts: "dontInvert",
     });
-  },
-  unmounted() {
-    this.closeCamera();
-  },
-  methods: {
-    handleClickFile() {
-      this.$refs.fileRef.click();
-    },
-    getFile() { },
-    openScan() {
-      let width = this.canvasHeight;
-      width = this.size === "whole" ? width : width * 0.5;
-      width = this.definition ? width * 1.6 : width;
-      let height = this.canvasWidth;
-      height = this.definition ? height * 1.6 : height;
-      const videoParam = {
-        audio: false,
-        video: {
-          facingMode: { exact: this.exact },
-          width,
-          height,
-        },
-      };
-      navigator.mediaDevices
-        .getUserMedia(videoParam)
-        .then((stream) => {
-          this.video.srcObject = stream;
-          this.video.setAttribute("playsinline", true);
-          this.video.play();
-          requestAnimationFrame(this.tick);
 
-          // 下面这 4 行这么麻烦的写，是因为我项目中严格的语法检测，嫌麻烦可以试试下面注释掉的一行
-          // let a = [];
-          // a = stream.getVideoTracks();
-          // const t = a[0];
-          // this.track = t;
-
-          [this.track] = stream.getVideoTracks();
-
-          setTimeout(() => {
-            this.isUseTorch = this.track.getCapabilities().torch || null;
-          }, 500);
-        })
-        .catch((err) => {
-          ElMessage.warning("设备不支持,请检查是否允许摄像头权限");
-          console.log("获取本地设备（摄像头）---失败-------err");
-          console.log(err);
-        });
-    },
-
-    closeCamera() {
-      if (this.video.srcObject) {
-        this.video.srcObject.getTracks().forEach((track) => {
-          track.stop();
-        });
+    if (code) {
+      drawLine(
+        code.location.topLeftCorner,
+        code.location.topRightCorner,
+        "#FF3B58"
+      );
+      drawLine(
+        code.location.topRightCorner,
+        code.location.bottomRightCorner,
+        "#FF3B58"
+      );
+      drawLine(
+        code.location.bottomRightCorner,
+        code.location.bottomLeftCorner,
+        "#FF3B58"
+      );
+      drawLine(
+        code.location.bottomLeftCorner,
+        code.location.topLeftCorner,
+        "#FF3B58"
+      );
+      if (code.data) {
+        getData(code.data);
       }
-    },
-    tick() {
-      if (this.video.readyState === this.video.HAVE_ENOUGH_DATA) {
-        this.canvasHeight = this.video.videoHeight;
-        this.canvasWidth = this.video.videoWidth;
-        this.c.width = this.canvasWidth;
-        this.c.height = this.canvasHeight;
-        if (this.canvas2d === undefined) {
-          this.canvas2d = this.c.getContext("2d");
-        }
+    }
+  }
+  requestAnimationFrame(tick);
+}
+function drawLine(begin, end, color) {
+  state.canvas2d.beginPath();
+  state.canvas2d.moveTo(begin.x, begin.y);
+  state.canvas2d.lineTo(end.x, end.y);
+  state.canvas2d.lineWidth = 4;
+  state.canvas2d.strokeStyle = color;
+  state.canvas2d.stroke();
+}
+const emit = defineEmits(['on-success'])
 
-        this.canvas2d.drawImage(
-          this.video,
-          0,
-          0,
-          this.canvasWidth,
-          this.canvasHeight
-        );
+function getData(data) {
+  emit("on-success", data);
+  if (!props.continue) {
+    closeCamera();
+  }
+}
 
-        const imageData = this.canvas2d.getImageData(
-          0,
-          0,
-          this.canvasWidth,
-          this.canvasHeight
-        );
+function openTrack() {
+  state.trackStatus = !state.trackStatus;
+  state.track.applyConstraints({
+    advanced: [{ torch: state.trackStatus }],
+  });
+}
+const handleClickFile = () => {
+  fileRef.value.click()
+}
+const getFile = () => {
+  const file = e.target.files[0]
+  const reader = new FileReader()
+  reader.readAsDataURL(file)
+  reader.onload = function () {
+    const base64 = e.target.result
+    console.log(base64)
+  }
+}
 
-        const code = jsQR(imageData.data, imageData.width, imageData.height, {
-          inversionAttempts: "dontInvert",
-        });
-
-        if (code) {
-          this.drawLine(
-            code.location.topLeftCorner,
-            code.location.topRightCorner,
-            "#FF3B58"
-          );
-          this.drawLine(
-            code.location.topRightCorner,
-            code.location.bottomRightCorner,
-            "#FF3B58"
-          );
-          this.drawLine(
-            code.location.bottomRightCorner,
-            code.location.bottomLeftCorner,
-            "#FF3B58"
-          );
-          this.drawLine(
-            code.location.bottomLeftCorner,
-            code.location.topLeftCorner,
-            "#FF3B58"
-          );
-          if (code.data) {
-            this.getData(code.data);
-          }
-        }
-      }
-      requestAnimationFrame(this.tick);
-    },
-    drawLine(begin, end, color) {
-      this.canvas2d.beginPath();
-      this.canvas2d.moveTo(begin.x, begin.y);
-      this.canvas2d.lineTo(end.x, end.y);
-      this.canvas2d.lineWidth = 4;
-      this.canvas2d.strokeStyle = color;
-      this.canvas2d.stroke();
-    },
-
-    getData(data) {
-      this.$emit("on-success", data);
-      if (!this.continue) {
-        this.closeCamera();
-      }
-    },
-
-    openTrack() {
-      this.trackStatus = !this.trackStatus;
-      this.track.applyConstraints({
-        advanced: [{ torch: this.trackStatus }],
-      });
-    },
-  },
-};
 </script>
 
 <style scoped>
-.flash-light{
+.flash-light {
   display: grid;
   place-content: center;
   margin-bottom: 6px;
 }
+
 .photo-wrap {
   position: fixed;
   bottom: 64px;
