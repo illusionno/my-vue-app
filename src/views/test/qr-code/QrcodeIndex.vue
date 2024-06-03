@@ -1,103 +1,104 @@
 <template>
-    <div class="qrcode">
-      <button @click="clickCode">打开相机</button>
-      <QrcodeReader
-        :qrcode="qrcode"
-        v-show="qrcode"
-        :camera="camera"
-        :torchActive="torchActive"
-        @switchCamera="switchCamera"
-        @ClickFlash="ClickFlash"
-        @turnCameraOff="turnCameraOff"
-        @onDecode="onDecode"
-        @onInit="onInit"
-      />
+  <div class="container">
+    <div v-if="!state.isMobile">该扫码功能仅支持移动端设备！</div>
+    <div v-else>
+      <div v-if="state.qrCodeVisible">
+        <QrcodeParse @on-success="gotQrCode" />
+      </div>
+      <!-- 解析结果 -->
+      <div v-else class="result-wrap">
+        <el-result :icon="state.result ? 'success' : 'error'" :title="state.result ? '解析结果' : '解析失败'">
+          <template #sub-title>
+            <div v-html="state.result"></div>
+          </template>
+          <template #extra>
+            <el-button type="primary" @click="() => state.qrCodeVisible = true">返回</el-button>
+          </template>
+        </el-result>
+      </div>
     </div>
-  </template>
-  <script>
-  import QrcodeReader from './QrcodeReader.vue'
-  export default {
-    data() {
-      return {
-        qrcode: false,
-        torchActive: false,
-        camera: 'off',
-      }
-    },
-    mounted() {},
-    methods: {
-      // 打开相机
-      clickCode() {
-        // camera:: 'rear'--前摄像头，'front'后摄像头，'off'关闭摄像头，会获取最后一帧显示，'auto'开始获取摄像头
-        this.qrcode = true
-        this.camera = 'front'
-      },
-      // 扫码结果回调
-      onDecode(result) {
-         // result, 扫描结果，可以根据自己的需求来实现相应的功能 
-        console.log(result)
-        this.turnCameraOff()
-      },
-      // 相机反转
-      switchCamera() {
-        switch (this.camera) {
-          case 'front':
-            this.camera = 'rear'
-            break
-          case 'rear':
-            this.camera = 'front'
-            break
-          default:
-            this.$toast('错误')
-        }
-      },
-      // 关闭相机？？？？？？
-      turnCameraOff() {
-        this.camera = 'off'
-        this.qrcode = false
-      },
-      // 打开手电筒
-      ClickFlash() {
-        switch (this.torchActive) {
-          case true:
-            this.torchActive = false
-            break
-          case false:
-            this.torchActive = true
-            break
-          default:
-            this.$toast('错误')
-        }
-      },
-  
-      // 检查是否调用摄像头
-      async onInit(promise) {
-        try {
-          await promise
-        } catch (error) {
-          if (error.name === 'StreamApiNotSupportedError') {
-          } else if (error.name === 'NotAllowedError') {
-            this.errorMessage = 'Hey! I need access to your camera'
-          } else if (error.name === 'NotFoundError') {
-            this.errorMessage = 'Do you even have a camera on your device?'
-          } else if (error.name === 'NotSupportedError') {
-            this.errorMessage =
-              'Seems like this page is served in non-secure context (HTTPS, localhost or file://)'
-          } else if (error.name === 'NotReadableError') {
-            this.errorMessage =
-              "Couldn't access your camera. Is it already in use?"
-          } else if (error.name === 'OverconstrainedError') {
-            this.errorMessage =
-              "Constraints don't match any installed camera. Did you asked for the front camera although there is none?"
-          } else {
-            this.errorMessage = 'UNKNOWN ERROR: ' + error.message
-          }
-        }
-      },
-    },
-    components: {
-      QrcodeReader
-    },
+  </div>
+</template>
+
+<script lang="ts" setup>
+import { reactive, onMounted } from "vue";
+import QrcodeParse from "./QrcodeParse.vue";
+import _ from 'lodash'
+
+// 全局控制的数据
+const state = reactive({
+  qrCode: "",
+  qrCodeVisible: true,
+  isMobile: false,
+  result: '',
+  qrCOdeData: "",
+});
+
+
+onMounted(() => {
+  handleScan()
+})
+// 开始扫描，检查设备
+const handleScan = () => {
+  state.isMobile = checkDevice()
+};
+
+// 检查当前登录设备类型
+const checkDevice = () => {
+  // 获取浏览器navigator对象的userAgent属性（浏览器用于HTTP请求的用户代理头的值）
+  const info = navigator.userAgent;
+  console.log(info, 'info');
+  // 通过正则表达式的test方法判断是否包含“Mobile”字符串
+  const isMobile = /mobile/i.test(info);
+  // 如果包含“Mobile”（是手机设备）则返回true
+  return isMobile;
+};
+
+// 扫码成功 (文件/string)
+const gotQrCode = (data: any) => {
+  state.qrCodeVisible = false
+  if (!_.isEmpty(data)) {
+    state.result = data
   }
-  </script>
-  
+
+  // try {
+  //   if (_.isEmpty(data)) return；
+  //   let res;
+  //   // 字符串解码
+  //   if (_.isString(data)) {
+  //     res = await api.getStringDecrypt({ content: data });
+  //   } else {
+  //     const formData = new FormData();
+  //     formData.append('file', data);
+  //     res = await api.getQrCodeDecrypt(formData);
+  //   }
+  //   if (res?.code) {
+  //     state.result = res?.message
+  //   } else {
+  //     state.result = res?.data?.content?.replace(/\n/g, '<br>') ?? t('common.noData')
+  //   }
+  // } catch (error) {
+  //  state.result = '解析失败，请重试！'
+  //   console.log(`getQrCodeDecrypt - error`, error);
+  // }
+};
+
+</script>
+
+
+
+<style lang="scss" scoped>
+.container {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  .result-wrap {
+    transform: translateY(46%);
+  }
+
+  .hide_file {
+    display: none;
+  }
+}
+</style>
