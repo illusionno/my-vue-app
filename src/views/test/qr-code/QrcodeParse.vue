@@ -7,19 +7,11 @@
       </div>
       <div v-if="isUseTorch" class="box2">
         <div class="track" @click="openTrack">
-          <!-- <svg t="1653920715959" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
-            p-id="1351" width="32" height="32">
-            <path
-              d="M651.353043 550.479503H378.752795L240.862609 364.315031c-3.688944-4.897391-5.660621-10.876025-5.660621-17.045466v-60.040745c0-15.773416 12.847702-28.621118 28.621118-28.621118h502.459627c15.773416 0 28.621118 12.847702 28.621118 28.621118v59.977143c0 6.105839-1.971677 12.084472-5.660621 17.045466l-137.890187 186.228074zM378.752795 598.308571v398.024348c0 15.328199 12.402484 27.667081 27.667081 27.667081h217.266087c15.328199 0 27.667081-12.402484 27.66708-27.667081V598.308571H378.752795z m136.300124 176.942112c-14.564969 0-26.331429-11.76646-26.331428-26.331428v-81.283975c0-14.564969 11.76646-26.331429 26.331428-26.331429 14.564969 0 26.331429 11.76646 26.331429 26.331429v81.283975c0 14.564969-11.76646 26.331429-26.331429 26.331428zM512 222.608696c-17.554286 0-31.801242-14.246957-31.801242-31.801243V31.801242c0-17.554286 14.246957-31.801242 31.801242-31.801242s31.801242 14.246957 31.801242 31.801242v159.006211c0 17.554286-14.246957 31.801242-31.801242 31.801243zM280.932174 205.881242c-9.47677 0-18.889938-4.197764-25.122981-12.275279L158.242981 67.991056a31.864845 31.864845 0 0 1 5.597019-44.648944 31.864845 31.864845 0 0 1 44.648944 5.597018l97.502609 125.551305a31.864845 31.864845 0 0 1-5.597019 44.648944c-5.787826 4.579379-12.656894 6.741863-19.46236 6.741863zM723.987081 205.881242c-6.805466 0-13.674534-2.162484-19.462361-6.678261a31.794882 31.794882 0 0 1-5.597018-44.648944l97.566211-125.551304a31.794882 31.794882 0 0 1 44.648944-5.597019 31.794882 31.794882 0 0 1 5.597019 44.648944l-97.566211 125.551305c-6.360248 8.077516-15.709814 12.27528-25.186584 12.275279z"
-              fill="#ffffff" p-id="1352"></path>
-          </svg> -->
-
-
           <div class="flash-light" v-if="trackStatus">
-            <MdiFlashlightOff style="width: 36px;height: 36px" />
+            <MdiFlashlightOff style="width: 36px; height: 36px" />
           </div>
           <div class="flash-light" v-else>
-            <MdiFlashlight style="width: 36px;height: 36px" />
+            <MdiFlashlight style="width: 36px; height: 36px" />
           </div>
           {{ trackStatus ? "关闭闪光灯" : "打开闪光灯" }}
         </div>
@@ -28,7 +20,13 @@
       <div class="photo-wrap">
         <div class="photo" @click="handleClickFile">
           <el-icon size="20">
-            <input class="hide_file" ref="fileRef" type="file" accept="image/*;" @change="getFile" />
+            <input
+              class="hide_file"
+              ref="fileRef"
+              type="file"
+              accept="image/*;"
+              @change="getFile"
+            />
             <PictureFilled />
           </el-icon>
         </div>
@@ -39,40 +37,40 @@
 </template>
 
 <script setup lang="ts">
+// https://github.com/cozmo/jsQR
 import jsQR from "jsqr";
 import { PictureFilled } from "@element-plus/icons-vue";
 import MdiFlashlight from "~icons/mdi/flashlight";
 import MdiFlashlightOff from "~icons/mdi/flashlight-off";
-import { ElMessage } from 'element-plus'
+import { ElMessage } from "element-plus";
 import _ from "lodash";
 
-const props = withDefaults(defineProps<{
-  // environment 后摄像头  user 前摄像头
-  exact?: 'environment' | 'user';
-  //  whole 全屏  half 半屏
-  size?: 'whole' | 'half';
-  // 清晰度: fasle 正常  true 高清
-  definition?: boolean;
-}>(), {
-  exact: 'environment',
-  size: 'whole',
-  definition: false
-})
-const video = ref()
-const canvas2d = ref()
-const canvasWidth = ref(520)
-const canvasHeight = ref(500)
-const c = ref()
-const track = ref()
+const props = withDefaults(
+  defineProps<{
+    // environment 后摄像头  user 前摄像头
+    exact?: "environment" | "user";
+    //  whole 全屏  half 半屏
+    size?: "whole" | "half";
+    // 清晰度: fasle 正常  true 高清
+    definition?: boolean;
+  }>(),
+  {
+    exact: "environment",
+    size: "whole",
+    definition: false,
+  }
+);
+const video = ref();
+const canvas2d = ref();
+const canvasWidth = ref(520);
+const canvasHeight = ref(500);
+const c = ref();
+const track = ref();
 const isUseTorch = ref(false);
 const trackStatus = ref(false);
-const fileRef = ref()
+const fileRef = ref();
 
 onMounted(() => {
-  if (origin.indexOf("https") === -1) {
-    ElMessage.warning("只支持 https 环境!");
-  }
-
   const windowWidth = window.screen.availWidth;
   const windowHeight = window.screen.availHeight;
 
@@ -89,11 +87,11 @@ onMounted(() => {
     document.querySelector(".canvasBox")?.append(c.value);
     openScan();
   });
-})
+});
 
 onUnmounted(() => {
-  closeCamera()
-})
+  closeCamera();
+});
 // 开始扫描
 async function openScan() {
   try {
@@ -105,21 +103,22 @@ async function openScan() {
     const videoParam = {
       audio: false,
       video: {
-        facingMode: { exact: props.exact },//强制使用摄像头类型
+        facingMode: { exact: props.exact }, //强制使用摄像头类型
         width,
         height,
       },
     };
     // 获取用户摄像头的视频流
-    const stream = await navigator.mediaDevices.getUserMedia(videoParam)
+    const stream = await navigator.mediaDevices.getUserMedia(videoParam);
     if (stream) {
       video.value.srcObject = stream;
-      video.value.setAttribute("playsinline", true);//内联播放
+      video.value.setAttribute("playsinline", true); //内联播放
       video.value.play();
       requestAnimationFrame(tick);
       // 返回所有的媒体内容流的轨道列表
       track.value = stream.getVideoTracks()?.[0];
       setTimeout(() => {
+        // 检测摄像头是否支持闪光灯
         isUseTorch.value = track.value.getCapabilities().torch || null;
       }, 500);
     }
@@ -130,7 +129,7 @@ async function openScan() {
 }
 function closeCamera() {
   if (video.value.srcObject) {
-    video.value.srcObject.getTracks().forEach((track) => {
+    video.value.srcObject.getTracks().forEach((track: any) => {
       track.stop();
     });
   }
@@ -200,12 +199,11 @@ function drawLine(begin: any, end: any, color: string) {
   canvas2d.value.strokeStyle = color;
   canvas2d.value.stroke();
 }
-const emit = defineEmits(['on-success'])
+const emit = defineEmits(["on-success"]);
 
 function getData(data: string) {
   emit("on-success", data);
-  closeCamera()
-
+  closeCamera();
 }
 
 function openTrack() {
@@ -215,15 +213,14 @@ function openTrack() {
   });
 }
 const handleClickFile = () => {
-  fileRef.value.click()
-}
+  fileRef.value.click();
+};
 const getFile = (e: any) => {
-  const file = e.target.files[0]
+  const file = e.target.files[0];
   console.log(typeof file);
   emit("on-success", file);
-  closeCamera()
-}
-
+  closeCamera();
+};
 </script>
 
 <style scoped>
@@ -240,7 +237,7 @@ const getFile = (e: any) => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px
+  gap: 6px;
 }
 
 .photo {
@@ -268,7 +265,8 @@ page {
   bottom: 0;
   left: 0;
   right: 0;
-  background-image: linear-gradient(0deg,
+  background-image: linear-gradient(
+      0deg,
       transparent 24%,
       rgba(32, 255, 77, 0.1) 25%,
       rgba(32, 255, 77, 0.1) 26%,
@@ -277,8 +275,10 @@ page {
       rgba(32, 255, 77, 0.1) 75%,
       rgba(32, 255, 77, 0.1) 76%,
       transparent 77%,
-      transparent),
-    linear-gradient(90deg,
+      transparent
+    ),
+    linear-gradient(
+      90deg,
       transparent 24%,
       rgba(32, 255, 77, 0.1) 25%,
       rgba(32, 255, 77, 0.1) 26%,
@@ -287,7 +287,8 @@ page {
       rgba(32, 255, 77, 0.1) 75%,
       rgba(32, 255, 77, 0.1) 76%,
       transparent 77%,
-      transparent);
+      transparent
+    );
   background-size: 3rem 3rem;
   background-position: -1rem -1rem;
   z-index: 10;

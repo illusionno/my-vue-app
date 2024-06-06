@@ -3,7 +3,7 @@
     <div v-if="!state.isMobile">该扫码功能仅支持移动端设备！</div>
     <div v-else>
       <div v-if="state.qrCodeVisible">
-        <QrcodeParse @on-success="gotQrCode" />
+        <vueQrcode @on-success="gotQrCode" />
       </div>
       <!-- 解析结果 -->
       <div v-else class="result-wrap">
@@ -17,23 +17,21 @@
         </el-result>
       </div>
     </div>
-  </div>
+    </div>
 </template>
 
 <script lang="ts" setup>
-import { reactive, onMounted } from "vue";
-import QrcodeParse from "./QrcodeParse.vue";
+import vueQrcode from "./vueQrcode.vue";
 import _ from 'lodash'
+import tone from "@/assets/tone.mp3";
+import { ElMessage } from 'element-plus'
 
-// 全局控制的数据
+const audio = new Audio(tone);
 const state = reactive({
-  qrCode: "",
   qrCodeVisible: true,
   isMobile: false,
   result: '',
-  qrCOdeData: "",
 });
-
 // 检查当前访问协议和设备
 const checkEnvironment = () => {
   if (window.location.protocol !== 'https:') {
@@ -53,7 +51,10 @@ onMounted(() => {
 const gotQrCode = (data: any) => {
   state.qrCodeVisible = false
   if (!_.isEmpty(data)) {
+    audio.play();
+    // 处理结果 
     state.result = data
+    // 这里可以进行后续处理，比如发送请求...
   }
 };
 
@@ -62,17 +63,5 @@ const gotQrCode = (data: any) => {
 
 
 <style lang="scss" scoped>
-.container {
-  display: block;
-  position: relative;
-  width: 100%;
-  height: 100%;
-  .result-wrap {
-    transform: translateY(46%);
-  }
 
-  .hide_file {
-    display: none;
-  }
-}
 </style>
