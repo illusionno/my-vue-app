@@ -34,14 +34,26 @@
 </template>
 <script setup lang="ts">
 // https://gruhn.github.io/vue-qrcode-reader/api/QrcodeStream.html
-import { QrcodeStream } from "vue-qrcode-reader";
+import { QrcodeStream ,setZXingModuleOverrides} from "vue-qrcode-reader";
 import { PictureFilled } from "@element-plus/icons-vue";
 import MdiFlashlight from "~icons/mdi/flashlight";
 import MdiFlashlightOff from "~icons/mdi/flashlight-off";
 import { ElMessage } from "element-plus";
 import { fileOpen } from "browser-fs-access";
 import _ from "lodash";
+// 该文件由zxing-wasm项目构建而来
+import wasmFile from './zxing_reader.wasm?url';
 
+// !为了离线加载，vue-qrcode-reader内部也是以cdn方式使用了zxing 进行二维码解析
+// https://github.com/gruhn/vue-qrcode-reader/issues/354
+setZXingModuleOverrides({
+  locateFile: (path: string, prefix: any) => {
+    if (path.endsWith('.wasm')) {
+      return wasmFile;
+    }
+    return prefix + path;
+  },
+});
 const error = ref("");
 const cameraIsReady = ref(false);
 const isSupportTorch = ref(false); // 是否支持闪光灯
@@ -109,11 +121,20 @@ function onDetect(detectedCodes: any) {
 
 const emit = defineEmits(["on-success"]);
 
-// 解码(父组件处理)
+// 解码(交给父组件处理：进行网络请求)
 function onDecode(text: string) {
   emit("on-success", text);
 }
-
+// 文件转成base64
+const processFile = async (file: any) => {
+    let reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (e) => {
+      let base64String = e.target?.result as string ||'';
+      // 此处可对该base64进行获取赋值传入后端
+      onDecode(base64String)
+    };
+};
 // 打开图片选择
 async function handleOpenFile() {
   try {
@@ -126,9 +147,7 @@ async function handleOpenFile() {
     if (fileSizeMb > limitSizeMb) {
       return ElMessage.warning(`图片大小限制 ${limitSizeMb}MB`);
     }
-    //! 注意：processFileGaia该方法vue-qrcode-reader默认没有导出，可以patch
-    // const _detectedCodes = await processFile(file);
-    // await onDetect(_detectedCodes);
+    processFile(file)
   } catch (error) {
     console.log(`[log] - handleOpenUploadIcon - error:`, error);
   }
