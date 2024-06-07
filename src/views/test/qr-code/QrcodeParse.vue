@@ -217,7 +217,6 @@ const handleClickFile = () => {
 };
 const getFile = (e: any) => {
   const file = e.target.files[0];
-  console.log(typeof file);
   emit("on-success", file);
   closeCamera();
 };

@@ -24,6 +24,7 @@
 import { reactive, onMounted } from "vue";
 import QrcodeParse from "./QrcodeParse.vue";
 import _ from 'lodash'
+import { ElMessage } from "element-plus";
 
 // 全局控制的数据
 const state = reactive({
@@ -53,6 +54,8 @@ onMounted(() => {
 const gotQrCode = (data: any) => {
   state.qrCodeVisible = false
   if (!_.isEmpty(data)) {
+    // 注意：这里只对扫码获得的base64编码进行识别展示，文件未作处理
+    // 实际中需要在这调用接口...
     state.result = data
   }
 };
